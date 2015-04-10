@@ -9,6 +9,7 @@ FTPFS is a filesystem for accessing an FTP server (uses ftplib in standard libra
 __all__ = ['FTPFS']
 
 import sys
+import netrc
 
 import fs
 from fs.base import *
@@ -895,6 +896,14 @@ class FTPFS(FS):
         self.default_timeout = timeout is _GLOBAL_DEFAULT_TIMEOUT
         self.use_dircache = dircache
         self.follow_symlinks = follow_symlinks
+        if not self.passwd and not self.user:
+            # try to initialize them using netrc
+            net = netrc.netrc()
+            authentication = net.authenticators(self.host)
+            if authentication:
+                (login, account, password) = authentication
+                self.user = login
+                self.passwd = password
 
         self.use_mlst = False
         self._lock = threading.RLock()
