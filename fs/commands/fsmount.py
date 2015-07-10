@@ -30,6 +30,8 @@ Mounts a file system on a system path"""
                             help="unmount path", metavar="UNMOUNT")
         optparse.add_option('-n', '--nocache', dest='nocache', action="store_true", default=False,
                             help="do not cache network filesystems", metavar="NOCACHE")
+        optparse.add_option('-a', '--allow_other', dest='allowother', action="store_true", default=False,
+                            help="allow other users to connect (only with fuse)", metavar="ALLOWOTHER")
 
         return optparse
 
@@ -123,7 +125,8 @@ Mounts a file system on a system path"""
             if options.foreground:
                 fuse_process = fuse.mount(fs,
                                           mount_path,
-                                          foreground=True)
+                                          foreground=True,
+                                          allow_other=options.allowother)
             else:
                 if not os.fork():
                     mp = fuse.mount(fs,
